@@ -11,6 +11,8 @@ import tensorflow as tf
 from tensorflow.keras.utils import CustomObjectScope
 from metrics import dice_loss, dice_coef, iou
 from train import create_dir
+from vamethods import backbone, modelType
+
 
 """ Global parameters """
 H = 512
@@ -21,12 +23,14 @@ if __name__ == "__main__":
     np.random.seed(42)
     tf.random.set_seed(42)
 
+    modelType = modelType(7)
+
     """ Directory for storing files """
-    create_dir("test_images/mask")
+    create_dir("test_images/{modelType}/mask")
 
     """ Loading model """
     with CustomObjectScope({'iou': iou, 'dice_coef': dice_coef, 'dice_loss': dice_loss}):
-        model = tf.keras.models.load_model("files/model.h5")
+        model = tf.keras.models.load_model("files/{modelType}/model.h5")
 
     """ Load the dataset """
     data_x = glob("test_images/image/*")
@@ -53,4 +57,4 @@ if __name__ == "__main__":
         line = np.ones((h, 10, 3)) * 128
         cat_images = np.concatenate([image, line, masked_image], axis=1)
         
-        cv2.imwrite(f"test_images/mask/{name}.png", cat_images)
+        cv2.imwrite(f"test_images/{modelType}/mask/{name}.png", cat_images)
