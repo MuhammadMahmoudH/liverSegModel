@@ -10,7 +10,9 @@ from tensorflow.keras.applications import ResNet50
 
 
 def ResNet(train, validation):
-    resnet_base_model = ResNet50(input_shape=(512,512,3), include_top=False, weights='imagenet')
+    shape = (255,255,3)
+    inputs = Input(shape)
+    resnet_base_model = ResNet50(input_tensor=(512,512,3), include_top=False, weights='imagenet')
 
     # resnet_base_model.summary()
 
@@ -34,26 +36,26 @@ def ResNet(train, validation):
 
     resnet_model.summary()
 
-    opt = tf.keras.optimizers.Adam(learning_rate=0.001)
+#     opt = tf.keras.optimizers.Adam(learning_rate=0.001)
 
-    METRICS = [
-        'accuracy',
-        'mse',
-        dice_coef,
-        iou,
-        Recall(),
-        Precision()
-    ]
+#     METRICS = [
+#         'accuracy',
+#         'mse',
+#         dice_coef,
+#         iou,
+#         Recall(),
+#         Precision()
+#     ]
 
-    resnet_model.compile(optimizer=opt, loss='binary_crossentropy', metrics=METRICS)
+#     resnet_model.compile(optimizer=opt, loss='binary_crossentropy', metrics=METRICS)
 
-#
-    r = resnet_model.fit(train,
-              epochs=10,
-              validation_data=validation,
-              # class_weight=class_weight,
-              steps_per_epoch=100,
-              validation_steps=25)
+# #
+#     r = resnet_model.fit(train,
+#               epochs=10,
+#               validation_data=validation,
+#               # class_weight=class_weight,
+#               steps_per_epoch=100,
+#               validation_steps=25)
 
     return resnet_model
 

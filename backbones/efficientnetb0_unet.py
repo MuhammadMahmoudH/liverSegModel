@@ -3,7 +3,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.applications import EfficientNetB0
 import tensorflow as tf
 
-print("TF Version: ", tf.__version__)
+# print("TF Version: ", tf.__version__)
 
 def conv_block(inputs, num_filters):
     x = Conv2D(num_filters, 3, padding="same")(inputs)

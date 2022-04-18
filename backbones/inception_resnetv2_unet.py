@@ -52,6 +52,7 @@ def build_inception_resnetv2_unet(input_shape):
     outputs = Conv2D(1, 1, padding="same", activation="sigmoid")(d4)
 
     model = Model(inputs, outputs, name="InceptionResNetV2_U-Net")
+    
     return model
 
 if __name__ == "__main__":
