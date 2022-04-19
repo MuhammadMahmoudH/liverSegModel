@@ -8,34 +8,50 @@ from keras.applications.resnet_v2 import ResNet152V2
 # Bi-Directional ConvLSTM U-Net with Densely Connected Convolutions
 # using pretrained models
 
-def pretrained_model(pretrain=1):
-    # VGG16 Pretrained model
-    inputs = Input((512, 512, 3))
+def pretrained_model(inputs):
     model_vgg = VGG16(include_top=False, input_tensor=inputs, pooling=None)
     model_vgg.trainable = False
     vgg = Model(model_vgg.input, model_vgg.get_layer('block1_conv2').output)
-    model = vgg
-    # ResNet50V2
-    model_ResNet = ResNet152V2(include_top=False, input_tensor=inputs, pooling=None)
-    model_ResNet.trainable = False
-    model_ResNet = Model(model_ResNet.input, model_vgg.get_layer('block1_conv2').output)
-    # Associate Model
-    if (pretrain == 2):
-        model = model_ResNet
-    # Print Model Summary
-    print(model.summary())
-    # return model
-    # from keras.applications.vgg16 import VGG16
-    # from keras.applications.resnet_v2 import ResNet152V2
+    # print(vgg.summary())
+
+    # model_vgg.summary()
+
+    print(model_vgg.get_layer('block1_conv2').input_shape)
+
+    model_resnet = ResNet152V2(include_top=False, input_tensor=inputs, pooling=None)
+    model_resnet.trainable = False
+    vgg = Model(model_vgg.input, model_vgg.get_layer('block1_conv2').output)
+    vgg = vgg(inputs)
+
+    return vgg, model_vgg
+    
+    # # VGG16 Pretrained model
     # inputs = Input((512, 512, 3))
     # model_vgg = VGG16(include_top=False, input_tensor=inputs, pooling=None)
     # model_vgg.trainable = False
     # vgg = Model(model_vgg.input, model_vgg.get_layer('block1_conv2').output)
-    # # print(vgg.summary())
+    # model = vgg
+    # # ResNet50V2
     # model_ResNet = ResNet152V2(include_top=False, input_tensor=inputs, pooling=None)
     # model_ResNet.trainable = False
-    # vgg = Model(model_ResNet.input, model_vgg.get_layer('block1_conv2').output)
-    # print(vgg.summary())
+    # model_ResNet = Model(model_ResNet.input, model_vgg.get_layer('block1_conv2').output)
+    # # Associate Model
+    # if (pretrain == 2):
+    #     model = model_ResNet
+    # # Print Model Summary
+    # print(model.summary())
+    # # return model
+    # # from keras.applications.vgg16 import VGG16
+    # # from keras.applications.resnet_v2 import ResNet152V2
+    # # inputs = Input((512, 512, 3))
+    # # model_vgg = VGG16(include_top=False, input_tensor=inputs, pooling=None)
+    # # model_vgg.trainable = False
+    # # vgg = Model(model_vgg.input, model_vgg.get_layer('block1_conv2').output)
+    # # # print(vgg.summary())
+    # # model_ResNet = ResNet152V2(include_top=False, input_tensor=inputs, pooling=None)
+    # # model_ResNet.trainable = False
+    # # vgg = Model(model_ResNet.input, model_vgg.get_layer('block1_conv2').output)
+    # # print(vgg.summary())
 
 def convLayer2pool(inputs, num_filter, classes, pool_kernal: bool = False, drop = 0):
 
@@ -54,14 +70,15 @@ def droping(convL):
     return dropedL
 
 def poolingL(conv, pool_kernal):
-    pooling = MaxPooling2D(pool_size=pool_kernal)(conv1)
+    pooling = MaxPooling2D(pool_size=pool_kernal)(conv)
     return pooling
 
 def BCDU_net_D3_1(input_size = (512, 512, 3), N = 255):
 
     inputs = Input(input_size)
+    vgg_, _ = pretrained_model(inputs)
 
-    conv1 = convLayer2pool(inputs, 64, 3)
+    conv1 = convLayer2pool(vgg_, 64, 3)
     pool1 = poolingL(conv1, (2,2))
     conv2 = convLayer2pool(pool1, 128, 3)
     pool2 = poolingL(conv2, (2,2))
