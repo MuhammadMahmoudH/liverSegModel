@@ -5,6 +5,8 @@ import numpy as np
 from keras.applications.vgg16 import VGG16
 from keras.applications.resnet_v2 import ResNet152V2
 
+# Bi-Directional ConvLSTM U-Net with Densely Connected Convolutions
+# using pretrained models
 
 def pretrained_model(pretrain=1):
     # VGG16 Pretrained model
