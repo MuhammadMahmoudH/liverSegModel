@@ -20,6 +20,7 @@ from backbones.VGG16 import vgg16Model, unet
 from backbones.ResNet import ResNet
 from backbones.vgg19_unet import build_vgg19_unet
 from models.new_Model_pretrained_LSTM_UNet.model import vggUNetLSTM
+from vamethods import backbone, modelType
 
 
 
@@ -89,35 +90,18 @@ if __name__ == "__main__":
     tf.random.set_seed(42)
 
     """ Models Parameters """
-    backbones = {
-        1: 'ResNet',
-        2: 'VGG16',
-        3: 'VGG19',
-        4: 'InceptionNetV3',
-        5: 'DenseNet121'
-    }
 
-    modelType = {
-        1: 'unet',
-        2: 'deeplabv3_plus',
-        3: 'unet++',
-        4: 'LSTM',
-        5: 'BCDU_net_D3',
-        6: 'R-cnn',
-        7: 'pretrained_LSTM_UNet',
-    }
-    modelType = modelType[7]
-
+    modelType = modelType(7)
 
     """ Directory for storing files """
-    create_dir("files/" + modelType)
+    create_dir("files/{modelType}")
 
     """ Hyperparameters """
     batch_size = 2
     lr = 1e-4
     num_epochs = 20
-    model_path = os.path.join("files/" + modelType, "model.h5")
-    csv_path = os.path.join("files/" + modelType, "data.csv")
+    model_path = os.path.join("files/{modelType}", "model.h5")
+    csv_path = os.path.join("files/{modelType}", "data.csv")
 
     """ Dataset """
     dataset_path = "new_data"
@@ -163,7 +147,7 @@ if __name__ == "__main__":
         ModelCheckpoint(model_path, verbose=1, save_best_only=True),
         ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=5, min_lr=1e-7, verbose=1),
         CSVLogger(csv_path),
-        TensorBoard(log_dir='logs/' + modelType + '/{}'.format(time())),
+        TensorBoard(log_dir="logs/{modelType}/{}".format(time())),
         EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=False),
     ]
 

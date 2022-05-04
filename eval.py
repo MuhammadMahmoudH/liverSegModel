@@ -12,6 +12,8 @@ from tensorflow.keras.utils import CustomObjectScope
 from sklearn.metrics import accuracy_score, f1_score, jaccard_score, precision_score, recall_score
 from metrics import dice_loss, dice_coef, iou
 from train import load_data
+from vamethods import backbone, modelType
+
 
 """ Global parameters """
 H = 512
@@ -44,12 +46,15 @@ if __name__ == "__main__":
     np.random.seed(42)
     tf.random.set_seed(42)
 
+    """ select model type """
+    modelType = modelType(7)
+
     """ Directory for storing files """
     create_dir("results")
 
     """ Loading model """
     with CustomObjectScope({'iou': iou, 'dice_coef': dice_coef, 'dice_loss': dice_loss}):
-        model = tf.keras.models.load_model("files/model.h5")
+        model = tf.keras.models.load_model("files/{modelType}/model.h5")
 
     """ Load the dataset """
     dataset_path = "new_data"
@@ -78,7 +83,7 @@ if __name__ == "__main__":
         y_pred = y_pred.astype(np.int32)
 
         """ Saving the prediction """
-        save_image_path = f"results/{name}.png"
+        save_image_path = f"results/{modelType}/{name}.png"
         save_results(image, mask, y_pred, save_image_path)
 
         """ Flatten the array """
@@ -103,4 +108,4 @@ if __name__ == "__main__":
     print(f"Precision: {score[4]:0.5f}")
 
     df = pd.DataFrame(SCORE, columns=["Image", "Accuracy", "F1", "Jaccard", "Recall", "Precision"])
-    df.to_csv("files/{}/score.csv")
+    df.to_csv("files/{modelType}/score.csv")

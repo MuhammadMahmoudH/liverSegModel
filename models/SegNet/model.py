@@ -54,5 +54,5 @@ def SegNet(input_shape=(512, 512, 3), classes=1):
 
     return model
 
-SegNet_model = SegNet(input_shape=(512, 512, 3), classes=1)
-history = SegNet_model.fit(train_loader,validation_data = test_loader,epochs=epochs)
+# SegNet_model = SegNet(input_shape=(512, 512, 3), classes=1)
+# history = SegNet_model.fit(train_loader,validation_data = test_loader,epochs=epochs)
