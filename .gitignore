@@ -4,3 +4,4 @@
 /prepare_data_nii/train_images/
 /prepare_data_nii/train_masks/
 /test_images/
+/tumor_data/

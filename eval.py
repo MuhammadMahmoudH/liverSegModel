@@ -103,4 +103,4 @@ if __name__ == "__main__":
     print(f"Precision: {score[4]:0.5f}")
 
     df = pd.DataFrame(SCORE, columns=["Image", "Accuracy", "F1", "Jaccard", "Recall", "Precision"])
-    df.to_csv("files/score.csv")
+    df.to_csv("files/{}/score.csv")
