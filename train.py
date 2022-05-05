@@ -151,6 +151,8 @@ if __name__ == "__main__":
         EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=False),
     ]
 
+    # to open tensorboard command tensorboard --logdir=logs/modelTypeName
+
     model.fit(
         train_dataset,
         epochs=num_epochs,
