@@ -17,8 +17,8 @@ def create_dir(path):
 
 def load_data(path, split=0.1):
     """ Loading the images and masks """
-    X = sorted(glob(os.path.join(path, "images", "*.jpg")))
-    Y = sorted(glob(os.path.join(path, "masks", "*.png")))
+    X = sorted(glob(os.path.join(path, "images", "*.jpg"))) #130 ct scan (90 train , 10)
+    Y = sorted(glob(os.path.join(path, "masks", "*.png"))) #130 (90, 10)
 
     """ Spliting the data into training and testing """
     split_size = int(len(X) * split)
@@ -107,21 +107,26 @@ def augment_data(images, masks, save_path, augment=True):
 
 if __name__ == "__main__":
     """ Seeding """
-    np.random.seed(42)
+    np.random.seed(40)
 
     """ Load the dataset """
-    data_path = "dataset"
+    # data_path = "dataset"
+    data_path = "dataset1"
     (train_x, train_y), (test_x, test_y) = load_data(data_path)
 
     print(f"Train:\t {len(train_x)} - {len(train_y)}")
     print(f"Test:\t {len(test_x)} - {len(test_y)}")
 
-    """ Create directories to save the augmented data """
-    create_dir("new_data/train/image/")
-    create_dir("new_data/train/mask/")
-    create_dir("new_data/test/image/")
-    create_dir("new_data/test/mask/")
+    # new_path = 'new_data'
+    new_path = 'new_data_lits_without_aug'
+
+    # """ Create directories to save the augmented data """
+    create_dir(f"{new_path}/train/image/")
+    create_dir(f"{new_path}/train/mask/")
+    create_dir(f"{new_path}/test/image/")
+    create_dir(f"{new_path}/test/mask/")
 
     """ Data augmentation """
-    augment_data(train_x, train_y, "new_data/train/", augment=True)
-    augment_data(test_x, test_y, "new_data/test/", augment=False)
+    # augment_data(train_x, train_y, f"{new_path}/train/", augment=True)
+    augment_data(train_x, train_y, f"{new_path}/train/", augment=False)
+    augment_data(test_x, test_y, f"{new_path}/test/", augment=False)

@@ -127,7 +127,8 @@ def resUNet():
 def vggUNet():
     input_size = (512, 512, 3)
     num_classes = 1
-    activation = 'dice_loss'
+    # activation = 'dice_loss'
+    activation = 'sigmoid'
     inputs = Input(input_size)
     _, model_vgg = preTrainedModels(inputs)
     conv1 = model_vgg.get_layer('block1_conv1')(inputs)

@@ -9,10 +9,13 @@ from glob import glob
 from tqdm import tqdm
 import tensorflow as tf
 from tensorflow.keras.utils import CustomObjectScope
-from sklearn.metrics import accuracy_score, f1_score, jaccard_score, precision_score, recall_score
+import matplotlib.pyplot as plt
+from sklearn.metrics import accuracy_score, f1_score, jaccard_score, precision_score, recall_score, confusion_matrix, ConfusionMatrixDisplay
 from metrics import dice_loss, dice_coef, iou
 from train import load_data
 from vamethods import backbone, modelType
+# from sklearn.metrics import confusion_matrix
+
 
 
 """ Global parameters """
@@ -47,24 +50,27 @@ if __name__ == "__main__":
     tf.random.set_seed(42)
 
     """ select model type """
-    modelType = modelType(7)
+    modelType = modelType()
+    # modelType = 'unetplusplus_vgg16_lits'
 
     """ Directory for storing files """
     create_dir("results")
 
     """ Loading model """
     with CustomObjectScope({'iou': iou, 'dice_coef': dice_coef, 'dice_loss': dice_loss}):
-        model = tf.keras.models.load_model("files/{modelType}/model.h5")
+        model = tf.keras.models.load_model(f"files/{modelType}/model.h5")
 
     """ Load the dataset """
-    dataset_path = "new_data"
+    dataset_path = "new_data1"
     valid_path = os.path.join(dataset_path, "test")
     test_x, test_y = load_data(valid_path)
     print(f"Test: {len(test_x)} - {len(test_y)}")
 
     """ Evaluation and Prediction """
     SCORE = []
+    i = 0
     for x, y in tqdm(zip(test_x, test_y), total=len(test_x)):
+        i+=1
         """ Extract the name """
         name = x.split("/")[-1].split(".")[0]
 
@@ -83,7 +89,7 @@ if __name__ == "__main__":
         y_pred = y_pred.astype(np.int32)
 
         """ Saving the prediction """
-        save_image_path = f"results/{modelType}/{name}.png"
+        save_image_path = f"results/{modelType}/{i}.png"
         save_results(image, mask, y_pred, save_image_path)
 
         """ Flatten the array """
@@ -96,7 +102,8 @@ if __name__ == "__main__":
         jac_value = jaccard_score(mask, y_pred, labels=[0, 1], average="micro")
         recall_value = recall_score(mask, y_pred, labels=[0, 1], average="micro")
         precision_value = precision_score(mask, y_pred, labels=[0, 1], average="micro")
-        SCORE.append([name, acc_value, f1_value, jac_value, recall_value, precision_value])
+        confusion_value = confusion_matrix(mask, y_pred, labels=[1,0], normalize='pred')
+        SCORE.append([name, acc_value, f1_value, jac_value, recall_value, precision_value, confusion_value])
 
     """ Metrics values """
     score = [s[1:]for s in SCORE]
@@ -106,6 +113,11 @@ if __name__ == "__main__":
     print(f"Jaccard: {score[2]:0.5f}")
     print(f"Recall: {score[3]:0.5f}")
     print(f"Precision: {score[4]:0.5f}")
-
-    df = pd.DataFrame(SCORE, columns=["Image", "Accuracy", "F1", "Jaccard", "Recall", "Precision"])
-    df.to_csv("files/{modelType}/score.csv")
+    # x= list(map('{:.2f}%'.format, score[5]))
+    print(score[5])
+    disp = ConfusionMatrixDisplay(confusion_matrix=score[5])
+    disp.plot(cmap=plt.cm.Blues)
+    plt.show()
+    plt.savefig(f"files/{modelType}/confusionMatrix.png")
+    df = pd.DataFrame(SCORE, columns=["Image", "Accuracy", "F1", "Jaccard", "Recall", "Precision", 'confusion'])
+    df.to_csv(f"files/{modelType}/score.csv")

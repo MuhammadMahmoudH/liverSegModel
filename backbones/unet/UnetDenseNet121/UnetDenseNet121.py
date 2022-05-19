@@ -1,6 +1,12 @@
+from tensorflow.keras.layers import concatenate, UpSampling2D, MaxPooling2D, Dense, Conv2D, MaxPool2D, Dropout, Flatten, BatchNormalization, Input
+from tensorflow.keras.layers import AveragePooling2D, GlobalAveragePooling2D, UpSampling2D, Reshape, Dense
+from tensorflow.keras.models import Model
+
+from keras.applications.densenet import DenseNet121
+
 input_size = (512,512,3)
 inputs = Input(input_size)
-def  UnetDenseNet121(inputs):
+def  UnetDenseNet121():
   denseNet121 = DenseNet121(include_top=False,input_shape=(512,512,3),pooling=None)
   denseNet121.trainable = False
   zero_padding2d = denseNet121.get_layer('zero_padding2d')(inputs)

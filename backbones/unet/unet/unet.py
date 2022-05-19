@@ -1,4 +1,8 @@
-def  Unet(inputs):
+from tensorflow.keras.layers import concatenate, UpSampling2D, MaxPooling2D, Dense, Conv2D, MaxPool2D, Dropout, Flatten, BatchNormalization, Input
+from tensorflow.keras.layers import AveragePooling2D, GlobalAveragePooling2D, UpSampling2D, Reshape, Dense
+from tensorflow.keras.models import Model
+
+def unet(inputs):
   conv1 = Conv2D(64, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(inputs)
   conv1 = Conv2D(64, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv1)
   pool1 = MaxPool2D()(conv1)
@@ -41,7 +45,9 @@ def  Unet(inputs):
   conv9 = Conv2D(64, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(merge9)
   conv9 = Conv2D(64, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv9)
   conv9 = Conv2D(32, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv9)
-  conv10 = Conv2D(3, 1, activation = 'softmax')(conv9)
+
+  conv10 = Conv2D(1, 1, activation = 'sigmoid')(conv9)
 
   model = Model(inputs, conv10)
+
   return model

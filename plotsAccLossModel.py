@@ -23,5 +23,7 @@ def plot_loss(history):
     plt.show()
 
 # plotting model structure
-def pltModel(model):
-    plot_model(model)
+def pltModel(model,to_file ,show_shapes):
+    plot_model(model, to_file=to_file, show_shapes=show_shapes, show_layer_names=True)
+    model_name = type(model).__name__
+    print(f'----------- Model {to_file} Plotted -------------')
