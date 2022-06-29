@@ -15,7 +15,7 @@ from metrics import dice_loss, dice_coef, iou
 from time import time
 from models.unet.model import UNet
 from models.unet.model2 import preTrainedUNet
-from models.unetplusplus.model import Vgg16UNetPlus
+from models.unetplusplus.model import Vgg16UNetPlus, UNetPlus, vgg16, pretrained_model, hyperd_pretrained
 from backbones.VGG16 import vgg16Model, unet
 from backbones.ResNet import ResNet
 from backbones.vgg19_unet import build_vgg19_unet
@@ -127,7 +127,7 @@ if __name__ == "__main__":
     valid_dataset = tf_dataset(valid_x, valid_y, batch=batch_size)
 
     model = deeplabv3_plus((H, W, 3))
-    input_img = Input((H, W, 3))
+    # input_img = Input((H, W, 3))
 
     # model = unet(input_img)
 
@@ -138,6 +138,10 @@ if __name__ == "__main__":
     # model = ResNet(train_dataset, valid_dataset)
     # model = preTrainedUNet(train_dataset, valid_dataset)
     # model = Vgg16UNetPlus()
+    # model = UNetPlus()
+    # model = pretrained_model((H, W, 3))
+    # model = hyperd_pretrained()
+    # print(model)
     # model = vggUNet()
     # model = vggUNetLSTM((H, W, 3))
 
@@ -170,16 +174,54 @@ if __name__ == "__main__":
         TensorBoard(log_dir="logs/" + modelType + "/{}".format(time())),
         EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=False),
     ]
-
-    # to open tensorboard command tensorboard --logdir=logs/modelTypeName
+    #
+    # # to open tensorboard command tensorboard --logdir=logs/modelTypeName
     model._name = modelType
-
+    #
     to_file = f"{modelType}.png"
     pltModel(model, to_file, True)
+    to_file_visual = f"visual_{modelType}.png"
+    #
+    import visualkeras
+    # # visualkeras.layered_view(model, draw_volume=False).show()  # display using your system viewer
+    # # visualkeras.layered_view(model, to_file='visual_output.png', draw_volume=False)  # write to disk
+    #
+    # from tensorflow.python.keras.layers import Conv2DTranspose, BatchNormalization, Dense, Conv2D, Flatten, Dropout, \
+    #     MaxPooling2D, ZeroPadding2D
+    import visualkeras
+    from tensorflow.keras import layers
+    from collections import defaultdict
+
+    colorMap = defaultdict(dict)
+    colorMap[layers.InputLayer]['fill'] = '#a43858'
+    colorMap[layers.Conv2D]['fill'] = '#00c28c'
+    colorMap[layers.AveragePooling2D]['fill'] = '#ebbd52'
+    colorMap[layers.BatchNormalization]['fill'] = '#118ab2'
+    colorMap[layers.Activation]['fill'] = '#002738'
+    colorMap[layers.Concatenate]['fill'] = '#a48439'
+    colorMap[layers.Conv2DTranspose]['fill'] = '#89525f'
+    # colorMap[layers.DepthwiseConv2D]['fill'] = 'grey'
+    # colorMap[layers.GlobalAveragePooling2D]['fill'] = 'black'
+    # colorMap[layers.Add]['fill'] = 'crimson'
+
+    # from keras_sequential_ascii import keras2ascii
+    #
+    # keras2ascii(model)
+
+    # print(color_map)
+
+    visualkeras.layered_view(model, color_map=colorMap,
+                             to_file=to_file_visual,
+                             # draw_volume=False,
+                             shade_step=20,
+                             spacing=100,
+                             # legend=True,
+                             # type_ignore=[ZeroPadding2D, Dropout, Flatten]
+                             ).show()  # write and show
 
     is_fitting = False
 
-    if(is_fitting):
+    if (is_fitting):
         model.fit(
             train_dataset,
             epochs=num_epochs,

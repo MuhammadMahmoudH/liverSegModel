@@ -7,8 +7,47 @@ from keras.layers import BatchNormalization
 from keras.layers import Conv2D, Input, AvgPool2D
 from keras.models import Model
 
-dropout_rate = 0.5
+from keras.applications.vgg16 import VGG16
+from keras.applications.resnet_v2 import ResNet152V2
 
+
+def pretrained_model(inputs, pretrain=1):
+    model_vgg = VGG16(include_top=False, input_shape=(512, 512, 3), pooling=None)
+    model_vgg.trainable = False
+    vgg = Model(model_vgg.input, model_vgg.get_layer('block1_conv2').output)
+
+    # model_ResNet = ResNet152V2(include_top=False, input_shape=(512, 512, 3), pooling=None)
+    # model_ResNet.trainable = False
+    # model_ResNet = Model(model_ResNet.input, model_vgg.get_layer('block1_conv2').output)
+    #
+    # if (pretrain == 2):
+    #     model = model_ResNet
+    #
+    # model_ResNet = model_ResNet(inputs)
+
+    vgg = vgg(inputs)
+
+
+    # print(model_ResNet.summary())
+    return vgg
+
+def hyperd_pretrained():
+    from keras.applications.vgg16 import VGG16
+    from keras.applications.resnet_v2 import ResNet152V2
+    model_vgg = VGG16(include_top=False, input_shape=(512, 512, 3), pooling=None)
+    model_vgg.trainable = False
+    vgg = Model(model_vgg.input, model_vgg.get_layer('block1_conv2').output)
+    vgg.summary()
+    model_ResNet = ResNet152V2(include_top=False, input_shape=(512, 512, 3), pooling=None)
+    model_ResNet.trainable = False
+    ResNet = Model(model_ResNet.input, vgg.get_layer('block1_conv2').output)
+    ResNet.summary()
+
+    # hy = concatenate([vgg, ResNet], name='merge_two_model')
+    # hy.summary()
+    return ResNet
+
+dropout_rate = 0.5
 
 def vgg16(inputs):
     model_vgg = VGG16(include_top=False, input_shape=(512, 512, 3), pooling=None)
@@ -111,7 +150,7 @@ def UNetPlus():
 def Vgg16UNetPlus():
     input_shape = (512, 512, 3)
     # n_labels = 3
-    n_labels = 1
+    n_labels = 3
     # using_deep_supervision = True
     using_deep_supervision = False
     nb_filter = [32, 64, 128, 256, 512]
@@ -121,7 +160,9 @@ def Vgg16UNetPlus():
     K.set_image_data_format("channels_last")
     bn_axis = -1
     inputs = Input(shape=input_shape, name='input_image')
-    vgg_ = vgg16(inputs)
+
+    vgg_ = pretrained_model(inputs)
+
     conv1_1 = conv_batchnorm_relu_block(vgg_, nb_filter=nb_filter[0])
     pool1 = AvgPool2D((2, 2), strides=(2, 2), name='pool1')(conv1_1)
 

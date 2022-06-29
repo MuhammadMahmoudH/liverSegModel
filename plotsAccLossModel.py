@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
+# from tensorflow.keras.utils import plot_model
 from tensorflow.keras.utils import plot_model
+
 
 # summarize history for acc
 def plot_acc(history):
@@ -22,8 +24,16 @@ def plot_loss(history):
     plt.legend(['train', 'test'], loc='upper left')
     plt.show()
 
+
 # plotting model structure
-def pltModel(model,to_file ,show_shapes):
-    plot_model(model, to_file=to_file, show_shapes=show_shapes, show_layer_names=True)
+def pltModel(model, to_file, show_shapes):
+    plot_model(model,
+               to_file=to_file,
+               show_shapes=show_shapes, show_layer_names=True,
+               show_dtype=True,
+               rankdir='TB',
+               expand_nested=True, dpi=600
+               )
+
     model_name = type(model).__name__
     print(f'----------- Model {to_file} Plotted -------------')

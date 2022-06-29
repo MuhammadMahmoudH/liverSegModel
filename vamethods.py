@@ -21,10 +21,11 @@ def backbone(backbone):
 #         7: 'pretrained_LSTM_UNet',
 #     }
 
-def modelType(model = 2):
+def modelType(model = 21):
     modelType = {
         1: 'unet_lits',
         2: 'deeplabv3_plus_ResNet50',
+        21: 'deeplabv3_plus_ResNet50_relu',
         3: 'unet++',
         4: 'LSTM',
         5: 'BCDU_net_D3',

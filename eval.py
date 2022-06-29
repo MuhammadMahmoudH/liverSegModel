@@ -41,7 +41,9 @@ def save_results(image, mask, y_pred, save_image_path):
     masked_image = image * y_pred
     y_pred = y_pred * 255
 
-    cat_images = np.concatenate([image, line, mask, line, y_pred, line, masked_image], axis=1)
+    # cat_images = np.concatenate([image, line, mask, line, y_pred, line, masked_image], axis=1)
+    cat_images = np.concatenate([image, line, y_pred, line, masked_image], axis=1)
+    print(save_image_path)
     cv2.imwrite(save_image_path, cat_images)
 
 if __name__ == "__main__":
@@ -54,7 +56,7 @@ if __name__ == "__main__":
     # modelType = 'unetplusplus_vgg16_lits'
 
     """ Directory for storing files """
-    create_dir("results")
+    create_dir(f"results/{modelType}")
 
     """ Loading model """
     with CustomObjectScope({'iou': iou, 'dice_coef': dice_coef, 'dice_loss': dice_loss}):
@@ -117,7 +119,7 @@ if __name__ == "__main__":
     print(score[5])
     disp = ConfusionMatrixDisplay(confusion_matrix=score[5])
     disp.plot(cmap=plt.cm.Blues)
-    plt.show()
     plt.savefig(f"files/{modelType}/confusionMatrix.png")
+    plt.show()
     df = pd.DataFrame(SCORE, columns=["Image", "Accuracy", "F1", "Jaccard", "Recall", "Precision", 'confusion'])
     df.to_csv(f"files/{modelType}/score.csv")
