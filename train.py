@@ -106,7 +106,7 @@ if __name__ == "__main__":
     """ Hyperparameters """
     batch_size = 2
     lr = 1e-4
-    num_epochs = 200
+    num_epochs = 20
     model_path = os.path.join(f"files/{modelType}", "liver_tumor_segmentation-{val_loss:.4f}.h5")
     csv_path = os.path.join(f"files/{modelType}", "data.csv")
 
@@ -191,15 +191,23 @@ if __name__ == "__main__":
     import visualkeras
     from tensorflow.keras import layers
     from collections import defaultdict
+    from PIL import ImageFont
+
+    font = ImageFont.truetype("arial.ttf", 60, encoding="unic")
+    # visualkeras.layered_view(model, spacing=5, font=font, legend=True, color_map=color_map)
 
     colorMap = defaultdict(dict)
     colorMap[layers.InputLayer]['fill'] = '#a43858'
     colorMap[layers.Conv2D]['fill'] = '#00c28c'
+    colorMap[layers.MaxPool2D]['fill'] = '#ffc28c'
     colorMap[layers.AveragePooling2D]['fill'] = '#ebbd52'
     colorMap[layers.BatchNormalization]['fill'] = '#118ab2'
     colorMap[layers.Activation]['fill'] = '#002738'
     colorMap[layers.Concatenate]['fill'] = '#a48439'
+    colorMap[layers.Dropout]['fill'] = '#a28239'
     colorMap[layers.Conv2DTranspose]['fill'] = '#89525f'
+    colorMap[layers.ConvLSTM2D]['fill'] = '#29523f'
+    colorMap[layers.Reshape]['fill'] = '#2f323A'
     # colorMap[layers.DepthwiseConv2D]['fill'] = 'grey'
     # colorMap[layers.GlobalAveragePooling2D]['fill'] = 'black'
     # colorMap[layers.Add]['fill'] = 'crimson'
@@ -213,9 +221,10 @@ if __name__ == "__main__":
     visualkeras.layered_view(model, color_map=colorMap,
                              to_file=to_file_visual,
                              # draw_volume=False,
-                             shade_step=20,
+                             shade_step=10,
                              spacing=100,
-                             # legend=True,
+                             legend=True,
+                             font=font
                              # type_ignore=[ZeroPadding2D, Dropout, Flatten]
                              ).show()  # write and show
 

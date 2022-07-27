@@ -211,7 +211,7 @@ def vggUNetLSTM(inpuuts_tensor):
 
     up6 = Conv2DTranspose(256, kernel_size=2, strides=2, padding='same', kernel_initializer='he_normal')(conv4)
     up6 = BatchNormalization(axis=3)(up6)
-    up6 = Activation('relu')(up6)
+    up6 = Activation('leaky_relu')(up6)
 
     x1 = Reshape(target_shape=(1, np.int32(N / 4), np.int32(N / 4), 256))(drop3)
     x2 = Reshape(target_shape=(1, np.int32(N / 4), np.int32(N / 4), 256))(up6)
@@ -219,12 +219,12 @@ def vggUNetLSTM(inpuuts_tensor):
     merge6 = ConvLSTM2D(filters=128, kernel_size=(3, 3), padding='same', return_sequences=False, go_backwards=True,
                         kernel_initializer='he_normal')(merge6)
 
-    conv6 = Conv2D(256, 3, activation='relu', padding='same', kernel_initializer='he_normal')(merge6)
-    conv6 = Conv2D(256, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv6)
+    conv6 = Conv2D(256, 3, activation='leaky_relu', padding='same', kernel_initializer='he_normal')(merge6)
+    conv6 = Conv2D(256, 3, activation='leaky_relu', padding='same', kernel_initializer='he_normal')(conv6)
 
     up7 = Conv2DTranspose(128, kernel_size=2, strides=2, padding='same', kernel_initializer='he_normal')(conv6)
     up7 = BatchNormalization(axis=3)(up7)
-    up7 = Activation('relu')(up7)
+    up7 = Activation('leaky_relu')(up7)
 
     x1 = Reshape(target_shape=(1, np.int32(N / 2), np.int32(N / 2), 128))(conv2)
     x2 = Reshape(target_shape=(1, np.int32(N / 2), np.int32(N / 2), 128))(up7)
@@ -232,12 +232,12 @@ def vggUNetLSTM(inpuuts_tensor):
     merge7 = ConvLSTM2D(filters=64, kernel_size=(3, 3), padding='same', return_sequences=False, go_backwards=True,
                         kernel_initializer='he_normal')(merge7)
 
-    conv7 = Conv2D(128, 3, activation='relu', padding='same', kernel_initializer='he_normal')(merge7)
-    conv7 = Conv2D(128, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv7)
+    conv7 = Conv2D(128, 3, activation='leaky_relu', padding='same', kernel_initializer='he_normal')(merge7)
+    conv7 = Conv2D(128, 3, activation='leaky_relu', padding='same', kernel_initializer='he_normal')(conv7)
 
     up8 = Conv2DTranspose(64, kernel_size=2, strides=2, padding='same', kernel_initializer='he_normal')(conv7)
     up8 = BatchNormalization(axis=3)(up8)
-    up8 = Activation('relu')(up8)
+    up8 = Activation('leaky_relu')(up8)
 
     x1 = Reshape(target_shape=(1, N, N, 64))(conv1)
     x2 = Reshape(target_shape=(1, N, N, 64))(up8)
@@ -245,9 +245,9 @@ def vggUNetLSTM(inpuuts_tensor):
     merge8 = ConvLSTM2D(filters=32, kernel_size=(3, 3), padding='same', return_sequences=False, go_backwards=True,
                         kernel_initializer='he_normal')(merge8)
 
-    conv8 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(merge8)
-    conv8 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv8)
-    conv8 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv8)
+    conv8 = Conv2D(64, 3, activation='leaky_relu', padding='same', kernel_initializer='he_normal')(merge8)
+    conv8 = Conv2D(64, 3, activation='leaky_relu', padding='same', kernel_initializer='he_normal')(conv8)
+    conv8 = Conv2D(32, 3, activation='leaky_relu', padding='same', kernel_initializer='he_normal')(conv8)
     conv9 = Conv2D(num_classes, 1, activation='sigmoid')(conv8)
 
     model = Model(inputs, conv9)
